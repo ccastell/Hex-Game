@@ -1,5 +1,6 @@
-import pygame
+from view import Hex
 
 if __name__ == "__main__":
-    print('Hello World')
+    hex_game = Hex()
+    hex_game.on_execute()
 
