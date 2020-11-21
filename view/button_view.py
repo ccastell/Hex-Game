@@ -12,7 +12,7 @@ from view.constant import (
 
 class ButtonView:
 
-    _screen = None
+    _screen: Surface
     _center: Tuple[float, float]
     _text: str
     _background_color: Tuple[int, int, int]
@@ -24,7 +24,7 @@ class ButtonView:
 
     def __init__(self,
                  id: Any,
-                 screen,
+                 screen: Surface,
                  center: Tuple[float, float],
                  text: str,
                  text_color: Tuple[int, int, int] = BLACK,
