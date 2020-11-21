@@ -1,4 +1,4 @@
-from src.view import Hex
+from src.views import Hex
 
 
 def start_game():

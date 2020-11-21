@@ -3,7 +3,7 @@ from typing import Tuple, List
 
 from pygame import Surface
 
-from src.view.button_view import ButtonView
+from src.views.button_view import ButtonView
 
 class ScreenView:
     

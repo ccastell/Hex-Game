@@ -3,8 +3,8 @@ import pygame
 
 from typing import Union
 
-from src.view.home_view import HomeView, HomeViewButton
-from src.view.board_view import BoardView, BoardViewButton
+from src.views.home_view import HomeView, HomeViewButton
+from src.views.board_view import BoardView, BoardViewButton
 
 
 

@@ -5,7 +5,7 @@ from pygame import Rect, Surface
 from pygame.font import Font
 from pygame.draw import rect
 
-from src.view.constant import (
+from src.views.constant import (
     MAIN_FONT, SMALL_PADDING, MEDIUM_PADDING, SMALL_TEXT,
     BLACK, WHITE
 )
