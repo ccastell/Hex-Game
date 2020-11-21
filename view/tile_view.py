@@ -2,6 +2,9 @@ import enum
 
 from typing import Tuple, Dict
 
+from pygame import Rect, Surface
+from pygame.draw import rect
+
 
 class Point(enum.Enum):
     TOP_RIGHT: int = 1
@@ -14,27 +17,23 @@ class Point(enum.Enum):
 
 class TileView:
 
-    __center: Tuple[float, float] = (0, 0)
+    _screen: Surface
+    _center: Tuple[float, float]
 
-    __top_right: Tuple[float, float] = (0, 0)
-    __mid_right: Tuple[float, float] = (0, 0)
-    __bottom_right: Tuple[float, float] = (0, 0)
-    __bottom_left: Tuple[float, float] = (0, 0)
-    __mid_left: Tuple[float, float] = (0, 0)
-    __top_left: Tuple[float, float] = (0, 0)
+    _tile_container: Rect
 
-    def __init__(self, center: Tuple[float, float]):
-        self.__center = center
+    def __init__(self,
+                 screen: Surface,
+                 center: Tuple[float, float],
+                 size: int = 10):
+        self._screen = screen
+        self._center = center
 
-    def center(self) -> Tuple[float, float]:
-        return self.__center
 
-    def corners(self) -> Dict[str: Tuple[float, float]]:
-        return {
-            Point.TOP_RIGHT: self.__top_right,
-            Point.MID_RIGHT: self.__mid_right,
-            Point.BOTTOM_RIGHT: self.__bottom_right,
-            Point.BOTTOM_LEFT: self.__bottom_left,
-            Point.MID_LEFT: self.__mid_left,
-            Point.TOP_LEFT: self.__top_left
-        }
+        self._draw_tile()
+
+    def _draw_tile(self):
+        self._tile_container = rect(
+            self._screen,
+            self._background_color
+        )
