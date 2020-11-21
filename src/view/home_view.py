@@ -6,9 +6,9 @@ from pygame.draw import rect
 from pygame.font import Font
 from pygame.display import update
 
-from view.screen_view import ScreenView
-from view.button_view import ButtonView
-from view.constant import (
+from src.view.screen_view import ScreenView
+from src.view.button_view import ButtonView
+from src.view.constant import (
     MAIN_FONT, TITLE_FONT, LARGE_TEXT, MEDIUM_TEXT,
     MAIN_BACKGROUND_COLOR, MAIN_TEXT_COLOR, SUB_TEXT_COLOR,
     MEDIUM_PADDING, LARGE_PADDING, BUTTON_BACKGROUND_COLOR, WHITE)

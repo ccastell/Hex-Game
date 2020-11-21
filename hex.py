@@ -1,6 +1,5 @@
-from view import Hex
+from src import start_game
 
 if __name__ == "__main__":
-    hex_game = Hex()
-    hex_game.on_execute()
+    start_game()
 

@@ -5,9 +5,9 @@ from pygame import Rect, Surface
 from pygame.draw import rect
 from pygame.display import update
 
-from view.screen_view import ScreenView
-from view.button_view import ButtonView
-from view.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, BUTTON_BACKGROUND_COLOR
+from src.view.screen_view import ScreenView
+from src.view.button_view import ButtonView
+from src.view.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, BUTTON_BACKGROUND_COLOR
 
 class BoardViewButton(enum.Enum):
     QUIT: int = 0,
