@@ -6,6 +6,7 @@ from typing import Union
 from src.views.home_view import HomeView, HomeViewButton
 from src.views.board_view import BoardView, BoardViewButton
 
+from src.models.board import Board
 
 
 class Screen(enum.Enum):
@@ -24,21 +25,25 @@ class Hex:
     _home_view: HomeView
     _board_view: BoardView
 
-    def __init__(self):
+    _board: Board
+
+    def __init__(self, board: Board):
         self._running = True
         self._screen = None
-        self.size = self.width, self.height = 700, 700
+        self._screen_size = self.width, self.height = 700, 700
+
+        self._board = board
 
     def on_init(self):
         pygame.init()
         pygame.display.set_caption('Hex Game')
         
         self._screen = pygame.display.set_mode(
-            self.size, pygame.HWSURFACE | pygame.DOUBLEBUF
+            self._screen_size, pygame.HWSURFACE | pygame.DOUBLEBUF
         )
  
-        self._home_view = HomeView(self._screen, self.size)
-        self._board_view = BoardView(self._screen, self.size)
+        self._home_view = HomeView(self._screen, self._screen_size)
+        self._board_view = BoardView(self._screen, self._screen_size, self._board)
         
         self._running = True
 

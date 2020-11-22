@@ -12,6 +12,9 @@ from src.views.button_view import ButtonView
 from src.views.tile_view import TileView
 from src.views.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, BUTTON_BACKGROUND_COLOR
 
+from src.models.board import Board
+
+
 class BoardViewButton(enum.Enum):
     QUIT: int = 0,
     UNDO: int = 1,
@@ -67,8 +70,12 @@ class BoardView(ScreenView):
     _hint_button: ButtonView 
 
 
-    def __init__(self, screen: Surface, size: int):
+    _board: Board
+
+    def __init__(self, screen: Surface, size: int, board: Board):
         super().__init__(screen, size)
+        
+        self._board = board
 
     def _draw_background(self):
         rect(
@@ -135,13 +142,13 @@ class BoardView(ScreenView):
 
         _draw_parallelogram()
 
-        for y_index in range(0, 11):        
-            for x_index in range(0, 11):
+        for y_index in range(0, self._board.size()):
+            for x_index in range(0, self._board.size()):
                 x_coord = 90 + (17 * y_index) + (35 * x_index)
                 y_coord = 165 + (30 * y_index) 
                 TileView(
                     self._screen,
-                    Tile((0, 0), []),
+                    self._board.find_tile(x_index, y_index),
                     (x_coord, y_coord)
                 )
 
