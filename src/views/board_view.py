@@ -2,11 +2,14 @@ import enum
 from typing import Tuple
 
 from pygame import Rect, Surface
-from pygame.draw import rect
+from pygame.draw import rect, polygon
 from pygame.display import update
+
+from src.models.tile import Tile, State as TileState
 
 from src.views.screen_view import ScreenView
 from src.views.button_view import ButtonView
+from src.views.tile_view import TileView
 from src.views.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, BUTTON_BACKGROUND_COLOR
 
 class BoardViewButton(enum.Enum):
@@ -14,6 +17,47 @@ class BoardViewButton(enum.Enum):
     UNDO: int = 1,
     REDO: int = 2
     HINT: int = 3
+
+PARALLELOGRAM = {
+    'TOP': (
+        (77, 129, 205),
+        [
+            (60, 133),
+            (60 + 403, 133),
+            (60 + 415, 153),
+            (70, 153)
+        ]
+    )
+    ,
+    'BOTTOM': (
+        (77, 129, 205),
+        [
+            (20 + 198, 145  + 330),
+            (20 + 198 + 415, 145  + 330),
+            (20 + 198 + 415, 145  + 330 + 20),
+            (20 + 198 + 10, 145  + 330 + 20)
+        ]
+    ),
+    'LEFT': (
+        (218, 113, 123),
+        [
+            (30, 133) ,
+            (60, 133),
+            (60 + 198, 145 + 330),
+            (20 + 198, 145  + 330)
+        ]
+    ),
+    'RIGHT': (
+        (218, 113, 123),
+        [
+            (20 + 415, 153),
+            (60 + 415, 153),
+            (50 + 198 + 415, 145 + 330 + 20),
+            (20 + 198 + 415, 145  + 330 + 20)
+        ]
+    )
+}
+
 
 class BoardView(ScreenView):
     
@@ -79,6 +123,28 @@ class BoardView(ScreenView):
         )
         # 75
 
+    def _draw_tiles(self):
+
+        def _draw_parallelogram():
+            for color, shape in PARALLELOGRAM.values():
+                polygon(
+                    self._screen,
+                    color,
+                    shape           
+                )            
+
+        _draw_parallelogram()
+
+        for y_index in range(0, 11):        
+            for x_index in range(0, 11):
+                x_coord = 90 + (17 * y_index) + (35 * x_index)
+                y_coord = 165 + (30 * y_index) 
+                TileView(
+                    self._screen,
+                    Tile((0, 0), []),
+                    (x_coord, y_coord)
+                )
+
     def mouse_button_down(self, mouse: Tuple[int, int]) -> enum.Enum:
         button_clicked = self._find_button(
             mouse,
@@ -100,4 +166,5 @@ class BoardView(ScreenView):
     def update(self):
         self._draw_background()
         self._draw_buttons()
+        self._draw_tiles()
         update()
