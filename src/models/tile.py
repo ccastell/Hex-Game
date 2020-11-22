@@ -19,7 +19,7 @@ class Tile:
     def __init__(self, id: Tuple[int, int], neighbors: List[Tuple[str, int]]):
         self._id = id
         self._neighbors = neighbors
-        self._state = State.BLUE
+        self._state = State.WHITE
 
     def id(self) -> Tuple[int, int]:
         return self._id
