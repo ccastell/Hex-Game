@@ -6,7 +6,8 @@ from pygame import Rect, Surface
 from pygame.image import load
 from pygame.draw import rect
 
-from src.models.tile import Tile, State as TileState
+from src.models.constant import Color as TileColor
+from src.models.tile import Tile
 from src.controllers.tile_controller import TileController
 
 class Point(enum.Enum):
@@ -26,7 +27,8 @@ class TileView:
     _tile: Tile
     _tile_controler: TileController
 
-    _tile_container: Rect
+    _hexagon: Surface
+    _hexagon_rect: Rect
 
     _tile_hexagon_location: str = 'resources/images/hexagon'
 
@@ -45,12 +47,12 @@ class TileView:
 
     def _hexagon_image(self):
 
-        tile_state = self._tile.state()
+        tile_color = self._tile.color()
 
         def _image_source():
-            if tile_state == TileState.BLUE:
+            if tile_color == TileColor.BLUE:
                 return f'{self._tile_hexagon_location}/blue.png'
-            elif tile_state == TileState.RED:
+            elif tile_color == TileColor.RED:
                 return f'{self._tile_hexagon_location}/red.png'
             else:
                 return f'{self._tile_hexagon_location}/white.png'
@@ -58,11 +60,22 @@ class TileView:
         return load(_image_source())
 
     def _draw_tile(self):
-        hexagon_image = self._hexagon_image()
+        self._hexagon = self._hexagon_image()
         
-        image_rect: Rect = hexagon_image.get_rect()
-        image_rect.center = self._center
+        self._hexagon_rect: Rect = self._hexagon.get_rect()
+        self._hexagon_rect.center = self._center
         self._screen.blit(
-            hexagon_image,
-            image_rect
+            self._hexagon,
+            self._hexagon_rect
         )
+
+    def tile(self):
+        return self._tile
+
+    def on_mouse_down(self, player):
+        return self._tile_controler.on_player_clicked(player)
+    
+    def collidepoint(self, mouse: Tuple[int, int]):
+        return self._hexagon_rect.collidepoint(mouse)
+
+    
