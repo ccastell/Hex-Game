@@ -74,7 +74,7 @@ class HomeView(ScreenView):
             background_color=BUTTON_BACKGROUND_COLOR
         )
 
-    def mouse_button_down(self, mouse: Tuple[int, int]) -> enum.Enum:
+    def on_mouse_down(self, mouse: Tuple[int, int]) -> enum.Enum:
         return self._find_button(mouse, [self._two_player_button])
 
     def update(self):
