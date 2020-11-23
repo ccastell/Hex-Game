@@ -7,11 +7,17 @@ from src.views.home_view import HomeView, HomeViewButton
 from src.views.board_view import BoardView, BoardViewButton
 
 from src.models.board import Board
+from src.models.player import Player
 
+from src.controllers.player_controller import PlayerController
 
 class Screen(enum.Enum):
     HOME: int = 0
     BOARD: int = 1
+
+
+class GameState(enum.Enum):
+    TWO_PLAYER_GAME: int
 
 #
 # 
@@ -34,34 +40,42 @@ class Hex:
 
         self._board = board
 
-    def on_init(self):
+
+    def on_init(self, player_1: Player, player_2: Player):
         pygame.init()
         pygame.display.set_caption('Hex Game')
         
         self._screen = pygame.display.set_mode(
             self._screen_size, pygame.HWSURFACE | pygame.DOUBLEBUF
         )
- 
+
         self._home_view = HomeView(self._screen, self._screen_size)
-        self._board_view = BoardView(self._screen, self._screen_size, self._board)
-        
+        self._board_view = BoardView(
+            self._screen,
+            self._screen_size,
+            self._board,
+            player_1,
+            player_2
+        )
+
         self._running = True
 
-    def _on_mouse_button_down(self):
+    def _on_mouse_down(self):
         mouse = pygame.mouse.get_pos()
         
         def _find_button() -> Union[HomeViewButton, BoardViewButton]:
             if self._current_screen == Screen.HOME:
-                return self._home_view.mouse_button_down(mouse)
+                return self._home_view.on_mouse_down(mouse)
             elif self._current_screen == Screen.BOARD:
-                return self._board_view.mouse_button_down(mouse)
+                return self._board_view.on_mouse_down(mouse)
             
         def _action(button: Union[HomeViewButton, BoardViewButton]) -> None:
             if button == HomeViewButton.TWO_PLAYER_GAME:
+                self._board_view.start_2_player_game()
                 self._current_screen = Screen.BOARD
             elif button == BoardViewButton.QUIT:
                 self._current_screen = Screen.HOME
-        
+
         _action(_find_button())
 
     def on_event(self, event):
@@ -69,7 +83,7 @@ class Hex:
             self._running = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            self._on_mouse_button_down()
+            self._on_mouse_down()
  
     def on_loop(self):
         pass
@@ -83,8 +97,8 @@ class Hex:
     def on_cleanup(self):
         pygame.quit()
  
-    def on_execute(self):
-        if self.on_init() == False:
+    def on_execute(self, player_1: Player, player_2: Player):
+        if self.on_init(player_1, player_2) == False:
             self._running = False
  
         while(self._running):
