@@ -7,7 +7,7 @@ from pygame.draw import rect
 
 from src.views.constant import (
     MAIN_FONT, SMALL_PADDING, MEDIUM_PADDING, SMALL_TEXT,
-    BLACK, WHITE
+    BLACK, WHITE, DARK_GRAY
 )
 
 class ButtonView:
@@ -16,6 +16,8 @@ class ButtonView:
     _center: Tuple[float, float]
     _text: str
     _background_color: Tuple[int, int, int]
+
+    _disabled: bool
 
     _text_rect: Rect
     _text_surface: Surface
@@ -28,12 +30,15 @@ class ButtonView:
                  center: Tuple[float, float],
                  text: str,
                  text_color: Tuple[int, int, int] = BLACK,
-                 background_color: Tuple[int, int, int] = WHITE):
+                 background_color: Tuple[int, int, int] = WHITE,
+                 disabled: bool = False):
 
         self._id = id
 
         self._screen = screen
         self._center = center
+
+        self._disabled = disabled
 
         self._text = text 
         self._background_color = background_color
@@ -59,9 +64,12 @@ class ButtonView:
 
 
     def _draw_button(self):
+        background_color = \
+            self._background_color if not self._disabled else DARK_GRAY
+
         self._button_contianer = rect(
             self._screen,
-            self._background_color,
+            background_color,
             Rect(
                 self._text_rect.x - (MEDIUM_PADDING * 2),
                 self._text_rect.y - SMALL_PADDING,
@@ -74,5 +82,7 @@ class ButtonView:
     def id(self):
         return self._id
 
-    def collidepoint(self, mouse: Tuple[int, int]):
-        return self._text_rect.collidepoint(mouse) or self._button_contianer.collidepoint(mouse)
+    def collidepoint(self, mouse: Tuple[int, int]) -> bool:
+        if not self._disabled:
+            return self._text_rect.collidepoint(mouse) or self._button_contianer.collidepoint(mouse)
+        return False
