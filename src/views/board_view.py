@@ -230,7 +230,8 @@ class BoardView(ScreenView):
     def _tile_clicked(self, mouse: Tuple[int, int]) -> bool:
         for row in self._tiles:
             for tile_view in row:
-                if tile_view.collidepoint(mouse) and tile_view.on_mouse_down(self._current_player):
+                if tile_view.collidepoint(mouse):
+                    tile_view.on_mouse_down(self._current_player)
                     self._board_controller.set_last_move(tile_view.tile())
                     return True
         return False

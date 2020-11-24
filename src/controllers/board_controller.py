@@ -43,12 +43,13 @@ class BoardController:
         self._board = board
 
     def set_last_move(self, tile: Tile):
-        if not self._board.is_current():
-            self._board.decrement_move_count()
+        if tile.is_lock():
+            if not self._board.is_current():
+                self._board.decrement_move_count()
 
-        self._board.set_last_move(tile)
-        self._board.increment_move_count()
-        self._board.current()
+            self._board.set_last_move(tile)
+            self._board.increment_move_count()
+            self._board.current()
 
     def undo(self, current_player: Player):
         number_moves: int = self._board.move_count()

@@ -15,8 +15,6 @@ class TileController:
         if not self._tile.is_lock():
             self._tile.set_color(player.color())
             self._tile.lock()
-            return True
-        return False
 
     def reset(self):
         self._tile.set_color(Color.WHITE)

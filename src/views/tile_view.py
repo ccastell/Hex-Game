@@ -70,10 +70,10 @@ class TileView:
         )
 
     def tile(self):
-        return self._tile
+        return self._tile 
 
     def on_mouse_down(self, player):
-        return self._tile_controler.on_player_clicked(player)
+        self._tile_controler.on_player_clicked(player)
     
     def collidepoint(self, mouse: Tuple[int, int]):
         return self._hexagon_rect.collidepoint(mouse)
