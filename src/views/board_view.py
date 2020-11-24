@@ -131,9 +131,9 @@ class BoardView(ScreenView):
             disabled = False
 
             if button['ID'] == BoardViewButton.SWAP:
-                disabled = self._board.number_moves() != 1 or self._board.is_swapped() or self._board.is_game_over()
+                disabled = self._board.move_count() != 1 or self._board.is_swapped() or self._board.game_over()
             elif button['ID'] == BoardViewButton.UNDO:
-                disabled = self._board.number_moves() < 1 or not self._board.is_current() or self._board.is_game_over()
+                disabled = self._board.move_count() < 1 or not self._board.is_current() or self._board.game_over()
 
             return ButtonView(
                 button['ID'],
@@ -202,7 +202,7 @@ class BoardView(ScreenView):
 
     def _draw_labels(self):
 
-        if self._board.is_game_over():
+        if self._board.game_over():
             self._draw_winning_labels()
         else:
             label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
@@ -231,7 +231,7 @@ class BoardView(ScreenView):
         for row in self._tiles:
             for tile_view in row:
                 if tile_view.collidepoint(mouse) and tile_view.on_mouse_down(self._current_player):
-                    self._board_controller.append_history(tile_view.tile())
+                    self._board_controller.set_last_move(tile_view.tile())
                     return True
         return False
     
@@ -257,14 +257,14 @@ class BoardView(ScreenView):
             self._swap_first_tile()
             self._change_current_player()
         elif button_clicked == BoardViewButton.UNDO:
-            self._board_controller.undo_history(self._current_player)
+            self._board_controller.undo(self._current_player)
             self._change_current_player()
         elif button_clicked == BoardViewButton.HINT:
             print("Hint Clicked")
         else:
             if self._tile_clicked(mouse):
                 self._board_controller.check_win()
-                if not self._board.is_game_over():
+                if not self._board.game_over():
                     self._change_current_player()
             else:
                 print("Not Registered")       

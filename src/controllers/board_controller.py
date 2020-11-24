@@ -42,31 +42,30 @@ class BoardController:
     def __init__(self, board: Board):
         self._board = board
 
-    def append_history(self, tile: Tile):
-        if self._board.is_current():
-            self._board.append_history(tile)
-        else:
-            self._board.delete_last_move()
-            self._board.append_history(tile)
+    def set_last_move(self, tile: Tile):
+        if not self._board.is_current():
+            self._board.decrement_move_count()
+
+        self._board.set_last_move(tile)
+        self._board.increment_move_count()
         self._board.current()
 
-    def undo_history(self, current_player: Player):
-        number_moves: int = self._board.number_moves()
+    def undo(self, current_player: Player):
+        number_moves: int = self._board.move_count()
         if number_moves > 0 and self._board.is_current():
             last_tile: Tile = self._board.last_move()
             tile_controler = TileController(last_tile)
 
-            if self._board.number_moves() == 1:
-                if self._board.is_swapped():
-                    tile_controler.set_color(current_player.color())
-                    self._board.unswapped()
-            if self._board.number_moves() >= 1:
+            if self._board.is_swapped() and self._board.move_count() == 1:    
+                tile_controler.set_color(current_player.color())
+                self._board.unswapped()
+            else:
                 tile_controler.reset()
                 self._board.not_current()
 
     def swap_first_tile(self, current_player: Player):
 
-        if self._board.number_moves() == 1 and not self._board.is_swapped():
+        if self._board.move_count() == 1 and not self._board.is_swapped():
             first_tile: Tile = self._board.last_move()
             tile_controler = TileController(first_tile)
             tile_controler.set_color(current_player.color())

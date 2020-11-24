@@ -11,11 +11,12 @@ class Board:
     _matrix: Tuple[Tuple[Tile , ...], ...]
 
     _is_swapped: bool = False
-    
     _is_current: bool = True
-    _history: List[Tile] = []
 
-    _is_game_over: bool = False
+    _move_count: int = 0
+    _last_move: Tile
+
+    _game_over: bool = False
 
     def __init__(self):
         self._size = 11
@@ -73,27 +74,35 @@ class Board:
     def not_current(self):
         self._is_current = False
 
-    def number_moves(self) -> int:
-        return len(self._history)
-
     def last_move(self):
-        return self._history[-1]
+        return self._last_move
 
-    def delete_last_move(self):
-        self._history = self._history[:-1]
+    def set_last_move(self, tile):
+        self._last_move = tile
+
+    def move_count(self) -> int:
+        return self._move_count
+
+    def decrement_move_count(self):
+        self._move_count -= 1
+
+    def increment_move_count(self):
+        self._move_count += 1
 
     def append_history(self, tile: Tile):
-        self._history.append(tile)
+        self._last_move = tile
+        self._move_count += 1
 
     def set_game_over(self):
-        self._is_game_over = True
+        self._game_over = True
     
-    def is_game_over(self):
-        return self._is_game_over
+    def game_over(self):
+        return self._game_over
 
     def reset(self):
-        self._is_game_over = False
+        self._game_over = False
         self.initialize_matrix()
-        self._history = []
+        self._move_count = 0
+        self._last_move = None
         self.unswapped()
         self.current()
