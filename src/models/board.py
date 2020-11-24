@@ -1,7 +1,8 @@
 from typing import Tuple, List
 
 from src.models.tile import Tile
-from src.models.constant import Color
+from src.models.constant import Color, HeuristicDirection
+
 
 class Board:
 
@@ -14,13 +15,12 @@ class Board:
     _is_current: bool = True
     _history: List[Tile] = []
 
+    _is_game_over: bool = False
 
     def __init__(self):
         self._size = 11
 
         self.initialize_matrix()
-        self.initialize_history()
-
 
     def initialize_matrix(self):
         self._matrix = []
@@ -39,16 +39,12 @@ class Board:
                     Tile(
                         (column_index, row_index),
                         list(filter(
-                            lambda neighbor: False if neighbor[0] < 0 or neighbor[1] < 0 else True,
+                            lambda neighbor: True if 0 <= neighbor[0] <= 10 and 0 <= neighbor[1] <= 10 else False,
                             _neighbors(column_index, row_index)
                         ))
                     )
                 )
             self._matrix.append(row)
-
-    def initialize_history(self):
-        self._history = []
-
 
     def matrix(self) -> Tuple[Tuple[Tile , ...], ...]:
         return self._matrix
@@ -89,6 +85,15 @@ class Board:
     def append_history(self, tile: Tile):
         self._history.append(tile)
 
-    def check_win(self):
-        # TODO: Check the win condition
-        raise NotImplementedError
+    def set_game_over(self):
+        self._is_game_over = True
+    
+    def is_game_over(self):
+        return self._is_game_over
+
+    def reset(self):
+        self._is_game_over = False
+        self.initialize_matrix()
+        self._history = []
+        self.unswapped()
+        self.current()
