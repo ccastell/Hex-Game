@@ -24,3 +24,6 @@ class TileController:
 
     def update_color(self, color: Color):
         self._tile.update_color(color)
+
+    def lock(self):
+        self._tile.lock_tile()
