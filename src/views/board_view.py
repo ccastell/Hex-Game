@@ -10,7 +10,8 @@ from src.views.screen_view import ScreenView
 from src.views.button_view import ButtonView
 from src.views.tile_view import TileView
 from src.views.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, \
-    BUTTON_BACKGROUND_COLOR, MAIN_FONT, MEDIUM_TEXT, RED_TILE, BLUE_TILE, BLACK
+    BUTTON_BACKGROUND_COLOR, MAIN_FONT, MEDIUM_TEXT, RED_TILE, BLUE_TILE, BLACK, \
+    LARGE_TEXT
 
 from src.models.constant import Color
 from src.models.board import Board
@@ -130,9 +131,9 @@ class BoardView(ScreenView):
             disabled = False
 
             if button['ID'] == BoardViewButton.SWAP:
-                disabled = self._board.number_moves() != 1 or self._board.is_swapped()
+                disabled = self._board.number_moves() != 1 or self._board.is_swapped() or self._board.is_game_over()
             elif button['ID'] == BoardViewButton.UNDO:
-                disabled = self._board.number_moves() < 1 or not self._board.is_current() 
+                disabled = self._board.number_moves() < 1 or not self._board.is_current() or self._board.is_game_over()
 
             return ButtonView(
                 button['ID'],
@@ -178,27 +179,52 @@ class BoardView(ScreenView):
             for y_index in range(0, self._board.size())     
         ]
 
-    def _draw_labels(self):
+    def _draw_winning_labels(self):
         label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
         label_surface: Surface = label.render(
-            'Turn:',
+            'Game Over!!',
             True,
             BLACK
         )
         label_rect: Rect = label_surface.get_rect()
-        label_rect.center = (36 + 50, self._height - 50)
+        label_rect.center = (87 + 50, self._height - 50)
+        self._screen.blit(label_surface, label_rect)
 
-        player_label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
+        player_label: Font = Font(MAIN_FONT, LARGE_TEXT)
         player_label_surface: Surface = player_label.render(
-            self._current_player.name(),
+            f'{self._current_player.name()} Wins!!',
             True,
             RED_TILE if self._current_player.color() == Color.RED else BLUE_TILE
         )
-        plauer_label_rect: Rect = player_label_surface.get_rect()
-        plauer_label_rect.center = (56 + 50 + 80, self._height - 50)
+        player_label_rect: Rect = player_label_surface.get_rect()
+        player_label_rect.center = (self._width / 2, self._height - 150)
+        self._screen.blit(player_label_surface, player_label_rect)
 
-        self._screen.blit(label_surface, label_rect)
-        self._screen.blit(player_label_surface, plauer_label_rect)
+    def _draw_labels(self):
+
+        if self._board.is_game_over():
+            self._draw_winning_labels()
+        else:
+            label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
+            label_surface: Surface = label.render(
+                'Turn: ',
+                True,
+                BLACK
+            )
+            label_rect: Rect = label_surface.get_rect()
+            label_rect.center = (36 + 50, self._height - 50)
+            self._screen.blit(label_surface, label_rect)
+
+            player_label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
+            player_label_surface: Surface = player_label.render(
+                self._current_player.name(),
+                True,
+                RED_TILE if self._current_player.color() == Color.RED else BLUE_TILE
+            )
+            plauer_label_rect: Rect = player_label_surface.get_rect()
+            plauer_label_rect.center = (56 + 50 + 80, self._height - 50)
+
+            self._screen.blit(player_label_surface, plauer_label_rect)
 
 
     def _tile_clicked(self, mouse: Tuple[int, int]) -> bool:
@@ -237,7 +263,9 @@ class BoardView(ScreenView):
             print("Hint Clicked")
         else:
             if self._tile_clicked(mouse):
-                self._change_current_player()
+                self._board_controller.check_win()
+                if not self._board.is_game_over():
+                    self._change_current_player()
             else:
                 print("Not Registered")       
 
