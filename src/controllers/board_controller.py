@@ -58,7 +58,7 @@ class BoardController:
 
             if self._board.number_moves() == 1:
                 if self._board.is_swapped():
-                    tile_controler.update_color(current_player.color())
+                    tile_controler.set_color(current_player.color())
                     self._board.unswapped()
             if self._board.number_moves() >= 1:
                 tile_controler.reset()
@@ -69,7 +69,7 @@ class BoardController:
         if self._board.number_moves() == 1 and not self._board.is_swapped():
             first_tile: Tile = self._board.last_move()
             tile_controler = TileController(first_tile)
-            tile_controler.update_color(current_player.color())
+            tile_controler.set_color(current_player.color())
             self._board.swapped()
 
     # https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2

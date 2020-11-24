@@ -41,16 +41,16 @@ class Tile:
     def color(self) -> Color:
         return self._color
 
-    def update_color(self, color: Color) -> None:
+    def set_color(self, color: Color) -> None:
         self._color = color
 
     def is_lock(self) -> bool:
         return self._lock
 
-    def unlock_tile(self) -> None:
+    def unlock(self) -> None:
         self._lock = False
 
-    def lock_tile(self) -> None:
+    def lock(self) -> None:
         self._lock = True
 
     def heuristics(self) -> Dict[HeuristicDirection, int]:

@@ -37,13 +37,13 @@ class Player:
     def color(self):
         return self._color
 
-    def update_color(self, color):
+    def set_color(self, color):
         self._color = color
 
     def state(self):
         self._state
     
-    def update_state(self, state: State):
+    def set_state(self, state: State):
         self._state = state
 
     def order(self):

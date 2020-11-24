@@ -10,10 +10,10 @@ class PlayerController:
         self._player =  player
 
     def human(self):
-        self._player.update_state(State.HUMAN)
+        self._player.set_state(State.HUMAN)
 
     def computer(self):
-        self._player.update_state(State.COMPUTER)
+        self._player.set_state(State.COMPUTER)
 
     def off(self):
-        self._player.update_state(State.OFF)
+        self._player.set_state(State.OFF)

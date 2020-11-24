@@ -13,17 +13,17 @@ class TileController:
 
     def on_player_clicked(self, player: Player) -> bool:
         if not self._tile.is_lock():
-            self._tile.update_color(player.color())
-            self._tile.lock_tile()
+            self._tile.set_color(player.color())
+            self._tile.lock()
             return True
         return False
 
     def reset(self):
-        self._tile.update_color(Color.WHITE)
-        self._tile.unlock_tile()
+        self._tile.set_color(Color.WHITE)
+        self._tile.unlock()
 
-    def update_color(self, color: Color):
-        self._tile.update_color(color)
+    def set_color(self, color: Color):
+        self._tile.set_color(color)
 
     def lock(self):
-        self._tile.lock_tile()
+        self._tile.lock()
