@@ -1,5 +1,7 @@
 from typing import List, Tuple
 
+from random import choice
+
 from src.models.player import Player
 from src.models.board import Board
 from src.models.tile import Tile
@@ -44,9 +46,6 @@ class BoardController:
 
     def set_last_move(self, tile: Tile):
         if tile.is_lock():
-            if not self._board.is_current():
-                self._board.decrement_move_count()
-
             self._board.set_last_move(tile)
             self._board.increment_move_count()
             self._board.current()
@@ -61,8 +60,22 @@ class BoardController:
                 tile_controler.set_color(current_player.color())
                 self._board.unswapped()
             else:
+                self._board.decrement_move_count()
                 tile_controler.reset()
                 self._board.not_current()
+
+    def hint(self, current_player: Player):
+        empty_tile: List[List[Tile]] = list(filter(
+            lambda t: not t.is_lock(),
+            [tile for row in self._board.matrix() for tile in row]
+        ))
+
+        random_tile = choice(empty_tile)
+
+        tile_controller = TileController(random_tile)
+
+        tile_controller.on_player_clicked(current_player)
+        self.set_last_move(random_tile)
 
     def swap_first_tile(self, current_player: Player):
 
