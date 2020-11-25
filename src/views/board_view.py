@@ -11,14 +11,14 @@ from src.views.button_view import ButtonView
 from src.views.tile_view import TileView
 from src.views.constant import WHITE, MAIN_BACKGROUND_COLOR, LARGE_PADDING, \
     BUTTON_BACKGROUND_COLOR, MAIN_FONT, MEDIUM_TEXT, RED_TILE, BLUE_TILE, BLACK, \
-    LARGE_TEXT
+    LARGE_TEXT, MAIN_TEXT_COLOR, TITLE_FONT, SUB_TEXT_COLOR
 
 from src.models.constant import Color
 from src.models.board import Board
 from src.models.player import Player
 
 from src.controllers.board_controller import BoardController
-from src.controllers.player_controller import PlayerController
+from src.controllers.player_controller import PlayersController
 
 PARALLELOGRAM = {
     'TOP': (
@@ -97,6 +97,9 @@ class BoardButtonsViews:
             disabled = move_count != 1 or is_swapped or game_over
         elif button['ID'] == BoardViewButton.UNDO:
             disabled = move_count < 1 or not is_current or game_over
+        elif button['ID'] == BoardViewButton.HINT:
+            disabled = game_over
+             
 
         return ButtonView(
             button['ID'],
@@ -130,8 +133,19 @@ class BoardLabelViews:
         self._width = width
         self._height = height
 
+    def _draw_title(self):
+        label: Font = Font(TITLE_FONT, LARGE_TEXT)
+        label_surface: Surface = label.render(
+            'The Hex Game',
+            True,
+            SUB_TEXT_COLOR
+        )
+        label_rect: Rect = label_surface.get_rect()
+        label_rect.center = (self._width / 2, (label_rect.height / 2))
+        self._screen.blit(label_surface, label_rect)
+
     def _draw_winning_labels(self, current_player: Player):
-        label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
+        label: Font = Font(TITLE_FONT, MEDIUM_TEXT)
         label_surface: Surface = label.render(
             'Game Over!!',
             True,
@@ -141,7 +155,7 @@ class BoardLabelViews:
         label_rect.center = (87 + 50, self._height - 50)
         self._screen.blit(label_surface, label_rect)
 
-        player_label: Font = Font(MAIN_FONT, LARGE_TEXT)
+        player_label: Font = Font(TITLE_FONT, LARGE_TEXT)
         player_label_surface: Surface = player_label.render(
             f'{current_player.name()} Wins!!',
             True,
@@ -159,21 +173,26 @@ class BoardLabelViews:
             BLACK
         )
         label_rect: Rect = label_surface.get_rect()
-        label_rect.center = (36 + 50, self._height - 50)
+        label_rect.center = ((label_rect.width / 2) + 50, self._height - 50)
         self._screen.blit(label_surface, label_rect)
 
-        player_label: Font = Font(MAIN_FONT, MEDIUM_TEXT)
+        player_label: Font = Font(TITLE_FONT, MEDIUM_TEXT)
         player_label_surface: Surface = player_label.render(
             current_player.name(),
             True,
             RED_TILE if current_player.color() == Color.RED else BLUE_TILE
         )
         plauer_label_rect: Rect = player_label_surface.get_rect()
-        plauer_label_rect.center = (56 + 50 + 80, self._height - 50)
+        plauer_label_rect.center = (
+            (plauer_label_rect.width / 2) + 50 + label_rect.width,
+            self._height - 50
+        )
 
         self._screen.blit(player_label_surface, plauer_label_rect)
 
     def draw(self, current_player, game_over: bool):
+        self._draw_title()
+
         if game_over:
             self._draw_winning_labels(current_player)
         else:
@@ -187,11 +206,7 @@ class BoardView(ScreenView):
 
     _board: Board
 
-    _player_1: Player
-    _player_2: Player
-
-    _player_1_controller: PlayerController
-    _player_2_controller: PlayerController
+    _players_controller: PlayersController
 
     _current_player: Player
 
@@ -202,28 +217,20 @@ class BoardView(ScreenView):
                  screen: Surface,
                  size: int,
                  board: Board,
-                 player_1: Player,
-                 player_2: Player):
+                 players_controller: PlayersController):
         super().__init__(screen, size)
         
         self._board = board
         
         self._board_controller = BoardController(board)
 
-        self._player_1 = player_1
-        self._player_2 = player_2 
-
-        self._player_1_controller = PlayerController(player_1)
-        self._player_2_controller = PlayerController(player_2)
-
-        self._current_player = player_1
+        self._players_controller = players_controller
 
         self._button_views = BoardButtonsViews(screen, self._width, self._height)
         self._label_views = BoardLabelViews(screen, self._width, self._height)
 
     def start_2_player_game(self):
-        self._player_1_controller.human()
-        self._player_2_controller.human()
+        self._players_controller.two_player_game()
 
     def _draw_background(self):
         rect(
@@ -271,24 +278,18 @@ class BoardView(ScreenView):
         ]
 
     def _draw_labels(self):
-        self._label_views.draw(self._current_player, self._board.game_over())
+        self._label_views.draw(self._players_controller.current_player(), self._board.game_over())
 
     def _on_tile_clicked(self, mouse: Tuple[int, int]) -> bool:
         for row in self._tiles:
             for tile_view in row:
-                if tile_view.collidepoint(mouse) and tile_view.on_mouse_down(self._current_player):
+                if tile_view.collidepoint(mouse) and tile_view.on_mouse_down(self._players_controller.current_player()):
                     self._board_controller.set_last_move(tile_view.tile())
                     return True
         return False
     
     def _on_swap_first_tile(self):
-        self._board_controller.swap_first_tile(self._current_player)
-
-    def _change_current_player(self):
-        if self._current_player == self._player_1:
-            self._current_player = self._player_2
-        else:
-            self._current_player = self._player_1
+        self._board_controller.swap_first_tile(self._players_controller.current_player())
     
     def on_mouse_down(self, mouse: Tuple[int, int]) -> enum.Enum:
         button_clicked = self._find_button(
@@ -298,20 +299,24 @@ class BoardView(ScreenView):
         
         if button_clicked == BoardViewButton.QUIT:
             self._board_controller.reset()
+            self._players_controller.reset()
             return button_clicked
         elif button_clicked == BoardViewButton.SWAP:
             self._on_swap_first_tile()
-            self._change_current_player()
+            self._players_controller.change_current_player()
         elif button_clicked == BoardViewButton.UNDO:
-            self._board_controller.undo(self._current_player)
-            self._change_current_player()
+            self._board_controller.undo(self._players_controller.current_player())
+            self._players_controller.change_current_player()
         elif button_clicked == BoardViewButton.HINT:
-            print("Hint Clicked")
+            self._board_controller.hint(self._players_controller.current_player())
+            self._board_controller.check_win()
+            if not self._board.game_over():
+                self._players_controller.change_current_player()
         else:
             if self._on_tile_clicked(mouse):
                 self._board_controller.check_win()
                 if not self._board.game_over():
-                    self._change_current_player()
+                    self._players_controller.change_current_player()
             else:
                 print("Not Registered")       
 

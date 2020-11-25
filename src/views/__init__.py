@@ -9,7 +9,7 @@ from src.views.board_view import BoardView, BoardViewButton
 from src.models.board import Board
 from src.models.player import Player
 
-from src.controllers.player_controller import PlayerController
+from src.controllers.player_controller import PlayersController
 
 class Screen(enum.Enum):
     HOME: int = 0
@@ -32,16 +32,18 @@ class Hex:
     _board_view: BoardView
 
     _board: Board
+    _players_controller: PlayersController
 
-    def __init__(self, board: Board):
+    def __init__(self, board: Board, players_controller: PlayersController):
         self._running = True
         self._screen = None
         self._screen_size = self.width, self.height = 700, 700
 
         self._board = board
+        self._players_controller = players_controller
 
 
-    def on_init(self, player_1: Player, player_2: Player):
+    def on_init(self):
         pygame.init()
         pygame.display.set_caption('Hex Game')
         
@@ -54,8 +56,7 @@ class Hex:
             self._screen,
             self._screen_size,
             self._board,
-            player_1,
-            player_2
+            self._players_controller
         )
 
         self._running = True
@@ -97,8 +98,8 @@ class Hex:
     def on_cleanup(self):
         pygame.quit()
  
-    def on_execute(self, player_1: Player, player_2: Player):
-        if self.on_init(player_1, player_2) == False:
+    def on_execute(self):
+        if self.on_init() == False:
             self._running = False
  
         while(self._running):
