@@ -5,7 +5,7 @@ objective is to create a continuous link that connects the two sides marked
 by the player’s color. More information about the game is found here: http://www.ludoteka.com/hex-en.html 
 
 ## Video Presentation
-  [![Watch the video](https://img.youtube.com/vi/pweQzGeLW1o/0.jpg)(https://youtu.be/pweQzGeLW1o)
+  [![Watch the video](https://img.youtube.com/vi/pweQzGeLW1o/0.jpg)](https://youtu.be/pweQzGeLW1o)
 
 ## System Installation
   1. Python>3.7
